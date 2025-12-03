@@ -11,7 +11,7 @@ backend/dist/
 
 # OS files
 .DS_Store
-Thumbs.db
+
 
 # Docker
 *.env
@@ -21,3 +21,4 @@ db/data/
 db/data/mysql.sock
 db/data/ib_logfile*
 db/data/ib_buffer_pool
+
