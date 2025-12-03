@@ -1,0 +1,23 @@
+# Node modules
+frontend/node_modules/
+backend/node_modules/
+
+# Build output
+frontend/.next/
+backend/dist/
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker
+*.env
+
+# Database runtime files
+db/data/
+db/data/mysql.sock
+db/data/ib_logfile*
+db/data/ib_buffer_pool
