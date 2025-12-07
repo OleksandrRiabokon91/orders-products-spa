@@ -36,7 +36,7 @@ FROM (
     UNION ALL SELECT 5 UNION ALL SELECT 6 UNION ALL SELECT 7 UNION ALL SELECT 8
 ) AS nums;
 
--- Генерация 20 продуктов с распределением по заказам 1–8
+-- Генерация 20 продуктов с распределением по заказам 1-8
 INSERT INTO products (serialNumber, isNew, photo, title, type, specification, guarantee_start, guarantee_end, price_usd, price_uah, order_id, date)
 SELECT 1000 + n, FLOOR(RAND()*2), 'pathToFile.jpg', CONCAT('Product ', n),
        CASE WHEN n%4=1 THEN 'Monitors'

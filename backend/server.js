@@ -1,9 +1,13 @@
-require("dotenv").config(); // подключаем .env в начале файла
+import dotenv from "dotenv";
+dotenv.config();
 
-const express = require("express");
-const cors = require("cors");
-const http = require("http");
-const { Server } = require("socket.io");
+import express from "express";
+import cors from "cors";
+import http from "http";
+import { Server } from "socket.io";
+import ordersRoutes from "./routes/orders.js";
+import productsRoutes from "./routes/products.js";
+import { errorHandler } from "./middleware/errorHandler.js";
 
 const app = express();
 
@@ -20,17 +24,11 @@ app.use(
 );
 
 app.use(express.json());
-
-// ---------------- REST API ----------------
-const ordersRoutes = require("./routes/orders");
-const productsRoutes = require("./routes/products");
-
 app.use("/orders", ordersRoutes);
 app.use("/products", productsRoutes);
+app.use(errorHandler);
 
-// ---------------- HTTP + WebSocket ----------------
 const server = http.createServer(app);
-
 const io = new Server(server, {
   cors: {
     origin: CORS_ORIGIN,
@@ -38,23 +36,18 @@ const io = new Server(server, {
   },
 });
 
-// ----------- WebSocket логика счётчика -----------
 let activeSessions = 0;
-
 io.on("connection", (socket) => {
   activeSessions++;
   io.emit("sessions", activeSessions);
   console.log("Client connected. Active:", activeSessions);
-
   socket.on("disconnect", () => {
     activeSessions--;
     io.emit("sessions", activeSessions);
     console.log("Client disconnected. Active:", activeSessions);
   });
 });
-// --------------------------------------------------
 
-// ---------------- PORT ----------------
 const PORT = process.env.PORT || 4000;
 
 server.listen(PORT, () =>
