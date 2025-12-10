@@ -25,34 +25,19 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Orders & Products.",
     description: "Orders & Products.",
-    // url: "https://podorognuk.com",
-    // images: [
-    //   {
-    // url: "/favicon.svg",
-    // alt: "Подорожник",
-    //     width: 1200,
-    //     height: 630,
-    //   },
-    // ],
   },
-  // icons: {
-  //   icon: "/favicon.svg",
-  // },
 };
-export default function RootLayout({
-  children,
-}: Readonly<{ children: React.ReactNode }>) {
+import "./globals.css";
+import { ReduxProvider } from "@/redux/store";
+import TanStackProvider from "@/components/queryClient";
+
+export default function RootLayout({ children }) {
   return (
     <html lang="en">
-      <body className={`${nunitoSans.variable} ${sora.variable}`}>
-        <TanStackProvider>
-          {/* <AuthProvider> */}
-          {/* <Header /> */}
-          <main>{children}</main>
-          <div id="loader-root"></div>
-          {/* <Footer /> */}
-          {/* </AuthProvider> */}
-        </TanStackProvider>
+      <body>
+        <ReduxProvider>
+          <TanStackProvider>{children}</TanStackProvider>
+        </ReduxProvider>
       </body>
     </html>
   );

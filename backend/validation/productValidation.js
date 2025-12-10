@@ -44,15 +44,22 @@ export const productSchema = Joi.object({
     "any.required": "Guarantee end is required.",
   }),
 
-  price_usd: Joi.number().precision(2).required().messages({
-    "number.base": "Price USD must be a number.",
-    "any.required": "Price USD is required.",
-  }),
-
-  price_uah: Joi.number().precision(2).required().messages({
-    "number.base": "Price UAH must be a number.",
-    "any.required": "Price UAH is required.",
-  }),
+  price_usd: Joi.string()
+    .pattern(/^\d+(\.\d{1,2})?$/)
+    .required()
+    .messages({
+      "string.pattern.base":
+        "Price USD must be a number with up to 2 decimal places.",
+      "any.required": "Price USD is required.",
+    }),
+  price_uah: Joi.string()
+    .pattern(/^\d+(\.\d{1,2})?$/)
+    .required()
+    .messages({
+      "string.pattern.base":
+        "Price UAH must be a number with up to 2 decimal places.",
+      "any.required": "Price UAH is required.",
+    }),
 
   date: Joi.date().iso().required().messages({
     "date.format": "Date must be a valid ISO date.",
