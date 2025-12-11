@@ -11,24 +11,21 @@ import {
   getProducts,
 } from "../controllers/productsController.js";
 import checkOrderExists from "../middleware/checkOrderExists.js";
-import { validateOrder } from "../validation/orderValidation.js";
-import { validateProduct } from "../validation/productValidation.js";
+import { validateBody } from "../middleware/validateBody.js";
+import { createOrderSchema } from "../validation/orderValidation.js";
+import { createProductSchema } from "../validation/productValidation.js";
 
 const router = express.Router();
 
 router.get("/", getAllOrders);
 router.get("/:id", checkOrderExists, getOrderById);
-router.post(
-  "/",
-  // validateOrder,
-  createOrder
-);
+router.post("/", validateBody(createOrderSchema), createOrder);
 router.delete("/:id", checkOrderExists, deleteOrder);
 router.get("/:id/products", checkOrderExists, getProducts);
 router.post(
   "/:id/products",
   checkOrderExists,
-  // validateProduct,
+  validateBody(createProductSchema),
   createProductForOrder
 );
 router.delete("/:id/products/:productId", checkOrderExists, deleteProduct);
