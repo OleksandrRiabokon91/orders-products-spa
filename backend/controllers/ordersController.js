@@ -1,65 +1,182 @@
 import pool from "../utils/db.js";
 import formatDateForMySQL from "../utils/formatDateForMySQL.js";
 import createError from "http-errors";
-
-export const getAllOrders = (req, res, next) => {
-  const query = `
-    SELECT o.*, 
-           COUNT(p.id) AS productsCount,
-           COALESCE(SUM(p.price_usd), 0) AS totalUSD,
-           COALESCE(SUM(p.price_uah), 0) AS totalUAH
-    FROM orders o
-    LEFT JOIN products p ON p.order_id = o.id
-    GROUP BY o.id
-    ORDER BY o.date DESC
-  `;
-  pool.query(query, (err, results) => {
-    if (err) return next(err);
+import { createProductForOrder } from "./productsController.js";
+// ! протестирован - не менять
+export const getAllOrders = async (req, res, next) => {
+  try {
+    const query = `
+      SELECT 
+        o.id,
+        o.title,
+        o.date,
+        DATE_FORMAT(o.date, '%d.%m.%Y %H:%i:%s') AS formattedDate,
+        COUNT(DISTINCT p.id) AS productsCount,
+        COALESCE(SUM(CASE WHEN pr.symbol = 'USD' THEN pr.value ELSE 0 END), 0) AS totalUSD,
+        COALESCE(SUM(CASE WHEN pr.symbol = 'UAH' THEN pr.value ELSE 0 END), 0) AS totalUAH
+      FROM orders o
+      LEFT JOIN products p ON p.order_id = o.id
+      LEFT JOIN prices pr ON pr.product_id = p.id
+      GROUP BY o.id
+      ORDER BY o.date DESC
+    `;
+    const [results] = await pool.promise().query(query);
     res.status(200).json(results);
-  });
+  } catch (err) {
+    next(err);
+  }
 };
-
-export const getOrderById = (req, res, next) => {
-  const orderId = req.params.id;
-  const orderQuery = "SELECT * FROM orders WHERE id = ?";
-  pool.query(orderQuery, [orderId], (err, orders) => {
-    if (err) return next(err);
-    if (!orders.length) return next(createError(404, "Order not found"));
-    const productsQuery = "SELECT * FROM products WHERE order_id = ?";
-    pool.query(productsQuery, [orderId], (err2, products) => {
-      if (err2) return next(err2);
-      res.status(200).json({ ...orders[0], products });
+// ! протестирован - не менять
+export const getOrderById = async (req, res, next) => {
+  try {
+    const orderId = req.params.id;
+    const [orders] = await pool.promise().query(
+      `
+      SELECT 
+        o.id,
+        o.title,
+        o.date,
+        DATE_FORMAT(o.date, '%d.%m.%Y %H:%i:%s') AS formattedDate
+      FROM orders o
+      WHERE o.id = ?
+      `,
+      [orderId]
+    );
+    if (!orders.length) {
+      return next(createError(404, "Order not found"));
+    }
+    const order = orders[0];
+    const [products] = await pool.promise().query(
+      `
+      SELECT 
+        p.id,
+        p.title,
+        p.serialNumber,
+        p.type,
+        p.specification,
+        p.isNew,
+        p.photo,
+        p.date
+      FROM products p
+      WHERE p.order_id = ?
+      `,
+      [orderId]
+    );
+    if (!products.length) {
+      return res.status(200).json({
+        ...order,
+        products: [],
+        productsCount: 0,
+        totalUSD: 0,
+        totalUAH: 0,
+      });
+    }
+    const productIds = products.map((p) => p.id);
+    const [prices] = await pool.promise().query(
+      `
+      SELECT product_id, value, symbol, isDefault
+      FROM prices
+      WHERE product_id IN (?)
+      `,
+      [productIds]
+    );
+    const [guarantees] = await pool.promise().query(
+      `
+      SELECT product_id, start, end
+      FROM guarantees
+      WHERE product_id IN (?)
+      `,
+      [productIds]
+    );
+    const productsWithDetails = products.map((product) => {
+      const productPrices = prices
+        .filter((pr) => pr.product_id === product.id)
+        .map((pr) => ({
+          value: pr.value,
+          symbol: pr.symbol,
+          isDefault: pr.isDefault,
+        }));
+      const productGuarantee = guarantees.find(
+        (g) => g.product_id === product.id
+      );
+      return {
+        ...product,
+        price: productPrices,
+        guarantee: productGuarantee || null,
+      };
     });
-  });
+    let totalUSD = 0;
+    let totalUAH = 0;
+    prices.forEach((pr) => {
+      if (pr.symbol === "USD") totalUSD += Number(pr.value);
+      if (pr.symbol === "UAH") totalUAH += Number(pr.value);
+    });
+    const response = {
+      ...order,
+      products: productsWithDetails,
+      productsCount: productsWithDetails.length,
+      totalUSD: totalUSD.toFixed(2),
+      totalUAH: totalUAH.toFixed(2),
+    };
+    return res.status(200).json(response);
+  } catch (err) {
+    next(err);
+  }
 };
-
-export const createOrder = (req, res, next) => {
-  const { title, description, date } = req.body;
-  const mysqlDate = formatDateForMySQL(date);
-  const query =
-    "INSERT INTO orders (title, description, date) VALUES (?, ?, ?)";
-  pool.query(query, [title, description, mysqlDate], (err, result) => {
-    if (err) return next(err);
-    res.status(201).json({
-      id: result.insertId,
+// ! протестирован - не менять
+export const createOrder = async (req, res, next) => {
+  try {
+    const { title, description, date, products } = req.body;
+    const insertOrderQuery = `
+      INSERT INTO orders (title, description, date)
+      VALUES (?, ?, ?)
+    `;
+    const [orderResult] = await pool
+      .promise()
+      .query(insertOrderQuery, [
+        title,
+        description,
+        formatDateForMySQL(date || new Date()),
+      ]);
+    const orderId = orderResult.insertId;
+    let createdProducts = [];
+    if (Array.isArray(products) && products.length > 0) {
+      for (const product of products) {
+        // "фейковый" req/res для повторного использования контроллера createProductForOrder
+        const fakeReq = {
+          params: { id: orderId },
+          body: { ...product, order_id: orderId },
+        };
+        const fakeRes = {
+          status: () => fakeRes,
+          json: (data) => createdProducts.push(data),
+        };
+        await createProductForOrder(fakeReq, fakeRes, next);
+      }
+    }
+    return res.status(201).json({
+      id: orderId,
       title,
       description,
-      date: date || new Date(),
+      date: formatDateForMySQL(date || new Date()),
+      products: createdProducts,
     });
-  });
+  } catch (err) {
+    next(err);
+  }
 };
-
-export const deleteOrder = (req, res, next) => {
-  const { id } = req.params;
-  const deleteProducts = "DELETE FROM products WHERE order_id = ?";
-  const deleteOrderQuery = "DELETE FROM orders WHERE id = ?";
-  pool.query(deleteProducts, [id], (err) => {
-    if (err) return next(err);
-    pool.query(deleteOrderQuery, [id], (err2, result) => {
-      if (err2) return next(err2);
-      if (result.affectedRows === 0)
-        return next(createError(404, "Order not found"));
-      return res.status(204).send();
-    });
-  });
+// ! протестирован - не менять
+export const deleteOrder = async (req, res, next) => {
+  try {
+    const orderId = req.orderId;
+    const [result] = await pool
+      .promise()
+      .query("DELETE FROM orders WHERE id = ?", [orderId]);
+    if (result.affectedRows === 0) {
+      return next(createError(404, "Order not found"));
+    }
+    return res.status(204).send();
+  } catch (err) {
+    next(err);
+  }
 };

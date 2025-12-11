@@ -1,4 +1,4 @@
 export default function formatDateForMySQL(date) {
-  if (!date) return new Date().toISOString().slice(0, 19).replace("T", " ");
-  return new Date(date).toISOString().slice(0, 19).replace("T", " ");
+  const d = date ? new Date(date) : new Date();
+  return d.toISOString().slice(0, 19).replace("T", " ");
 }
