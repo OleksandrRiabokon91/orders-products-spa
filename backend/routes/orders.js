@@ -17,28 +17,20 @@ import { validateProduct } from "../validation/productValidation.js";
 const router = express.Router();
 
 router.get("/", getAllOrders);
-router.get(
-  "/:id",
-  // checkOrderExists,
-  getOrderById
-);
+router.get("/:id", checkOrderExists, getOrderById);
 router.post(
   "/",
   // validateOrder,
   createOrder
 );
 router.delete("/:id", checkOrderExists, deleteOrder);
-router.get(
-  "/:id/products",
-  // checkOrderExists,
-  getProducts
-);
+router.get("/:id/products", checkOrderExists, getProducts);
 router.post(
   "/:id/products",
-  // checkOrderExists,
+  checkOrderExists,
   // validateProduct,
   createProductForOrder
 );
-router.delete("/:id/products/:productId", deleteProduct);
+router.delete("/:id/products/:productId", checkOrderExists, deleteProduct);
 
 export default router;

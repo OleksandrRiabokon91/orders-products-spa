@@ -117,7 +117,7 @@ export const getProductById = async (req, res, next) => {
       [productId]
     );
     if (!products.length) {
-      return next(createError(404, "Product not found"));
+      throw createHttpError(404, "Product not found");
     }
     const product = products[0];
     const [prices] = await pool.promise().query(
@@ -262,13 +262,13 @@ export const deleteProduct = async (req, res, next) => {
   try {
     const productId = req.params.id;
     if (!productId) {
-      return next(createError(400, "Product id is required"));
+      throw createHttpError(400, "Product id is required");
     }
     const [result] = await pool
       .promise()
       .query("DELETE FROM products WHERE id = ?", [productId]);
     if (result.affectedRows === 0) {
-      return next(createError(404, "Product not found"));
+      throw createHttpError(404, "Product not found");
     }
     return res.status(204).send();
   } catch (err) {

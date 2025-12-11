@@ -2,6 +2,7 @@ import pool from "../utils/db.js";
 import formatDateForMySQL from "../utils/formatDateForMySQL.js";
 import createError from "http-errors";
 import { createProductForOrder } from "./productsController.js";
+import createHttpError from "http-errors";
 // ! протестирован - не менять
 export const getAllOrders = async (req, res, next) => {
   try {
@@ -43,7 +44,7 @@ export const getOrderById = async (req, res, next) => {
       [orderId]
     );
     if (!orders.length) {
-      return next(createError(404, "Order not found"));
+      throw createHttpError(404, "Order not found");
     }
     const order = orders[0];
     const [products] = await pool.promise().query(
@@ -173,7 +174,7 @@ export const deleteOrder = async (req, res, next) => {
       .promise()
       .query("DELETE FROM orders WHERE id = ?", [orderId]);
     if (result.affectedRows === 0) {
-      return next(createError(404, "Order not found"));
+      throw createHttpError(404, "Order not found");
     }
     return res.status(204).send();
   } catch (err) {

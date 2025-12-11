@@ -5,9 +5,10 @@ import express from "express";
 import cors from "cors";
 import http from "http";
 import { Server } from "socket.io";
-import ordersRoutes from "./routes/orders.js";
-import productsRoutes from "./routes/products.js";
+import ordersRouter from "./routes/orders.js";
+import productsRouter from "./routes/products.js";
 import { errorHandler } from "./middleware/errorHandler.js";
+import { notFoundHandler } from "./middleware/notFoundHandler.js";
 
 const app = express();
 
@@ -24,8 +25,9 @@ app.use(
 );
 
 app.use(express.json());
-app.use("/orders", ordersRoutes);
-app.use("/products", productsRoutes);
+app.use("/orders", ordersRouter);
+app.use("/products", productsRouter);
+app.use("*", notFoundHandler);
 app.use(errorHandler);
 
 const server = http.createServer(app);
