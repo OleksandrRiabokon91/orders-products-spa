@@ -24,7 +24,12 @@ app.use(
   })
 );
 
-app.use(express.json());
+app.use(
+  express.json({
+    type: ["application/json"],
+    limit: "100kb",
+  })
+);
 app.use("/orders", ordersRouter);
 app.use("/products", productsRouter);
 app.use(notFoundHandler);

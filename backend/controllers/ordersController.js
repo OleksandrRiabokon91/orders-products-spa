@@ -140,8 +140,12 @@ export const createOrder = async (req, res, next) => {
       ]);
     const orderId = orderResult.insertId;
     let createdProducts = [];
-    if (Array.isArray(products) && products.length > 0) {
-      for (const product of products) {
+    let productsArray = products;
+    if (products && !Array.isArray(products)) {
+      productsArray = [products];
+    }
+    if (Array.isArray(productsArray) && productsArray.length > 0) {
+      for (const product of productsArray) {
         // "фейковый" req/res для повторного использования контроллера createProductForOrder
         const fakeReq = {
           params: { id: orderId },

@@ -31,3 +31,38 @@ export function validateOrder(req, res, next) {
 
   next();
 }
+
+// пост примеры данных
+// {
+//   "title": "Order With Products",
+//   "description": "Auto-created with products",
+//   "date": "2025-12-10 12:00:00",
+//   "products": [
+//     {
+//       "serialNumber": "1001",
+//       "isNew": true,
+//       "photo": "monitor-lg.jpg",
+//       "title": "Monitor LG",
+//       "type": "Monitors",
+//       "specification": "IPS 27\", 144Hz",
+//       "guarantee_start": "2025-01-01 10:00:00",
+//       "guarantee_end": "2026-01-01 10:00:00",
+//       "price": 150,
+//       "inputCurrency": "UAH",
+//       "date": "2025-01-10 12:00:00"
+//     },
+//     {
+//       "serialNumber": "1002",
+//       "isNew": false,
+//       "photo": "keyboard-logitech.jpg",
+//       "title": "Keyboard Logitech",
+//       "type": "Keyboards",
+//       "specification": "Mechanical Brown Switches",
+//       "guarantee_start": "2024-03-01 14:00:00",
+//       "guarantee_end": "2025-03-01 14:00:00",
+//       "price": 80,
+//       "inputCurrency": "UAH",
+//       "date": "2025-01-10 12:00:00"
+//     }
+//   ]
+// }

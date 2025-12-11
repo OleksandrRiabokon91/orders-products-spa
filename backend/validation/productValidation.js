@@ -81,3 +81,60 @@ export function validateProduct(req, res, next) {
 
   next();
 }
+
+// ! response
+//  {
+//             "id": 3,
+//             "title": "Product 3",
+//             "serialNumber": 1003,
+//             "type": "Keyboards",
+//             "specification": "Specification 3",
+//             "isNew": 1,
+//             "photo": "pathToFile.jpg",
+//             "date": "2025-12-10T09:25:47.000Z",
+//             "price": [
+//                 {
+//                     "value": "268.09",
+//                     "symbol": "USD",
+//                     "isDefault": 0
+//                 },
+//                 {
+//                     "value": "12370.62",
+//                     "symbol": "UAH",
+//                     "isDefault": 1
+//                 }
+//             ],
+//             "guarantee": {
+//                 "product_id": 3,
+//                 "start": "2025-12-10T09:25:47.000Z",
+//                 "end": "2026-12-10T09:25:47.000Z"
+//             }
+//         }
+
+// ! req
+//                 {
+//   "serialNumber": "1001",
+//   "isNew": true,
+//   "photo": "example-photo.jpg",
+//   "title": "Monitor Samsung Odyssey",
+//   "type": "Monitors",
+//   "specification": "27 inch, 144Hz, IPS",
+//   "guarantee_start": "2025-01-01 10:00:00",
+//   "guarantee_end": "2026-01-01 10:00:00",
+//   "date": "2025-01-10 12:00:00",
+//   "price": 150,
+//   "inputCurrency": "USD"
+// }
+// {
+//   "serialNumber": 1001,
+//   "isNew": 0,
+//   "photo": "example-photo.jpg",
+//   "title": "Monitor Samsung Odyssey",
+//   "type": "Monitors",
+//   "specification": "27 inch, 144Hz, IPS",
+//   "guarantee_start": "2025-01-01 10:00:00",
+//   "guarantee_end": "2026-01-01 10:00:00",
+//   "date": "2025-01-10 12:00:00",
+//   "price": 150,
+//   "inputCurrency": "USD"
+// }
