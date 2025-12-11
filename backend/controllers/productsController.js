@@ -1,7 +1,7 @@
+import createHttpError from "http-errors";
 import pool from "../utils/db.js";
 import formatDateForMySQL from "../utils/formatDateForMySQL.js";
 import { getUSDUAHRate, convertPrice } from "../utils/getUSDUAHRate.js";
-import createError from "http-errors";
 // ! протестирован - не менять
 // GET /products
 // GET /orders/:id/products

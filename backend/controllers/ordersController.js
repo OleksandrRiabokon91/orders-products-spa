@@ -1,6 +1,5 @@
 import pool from "../utils/db.js";
 import formatDateForMySQL from "../utils/formatDateForMySQL.js";
-import createError from "http-errors";
 import { createProductForOrder } from "./productsController.js";
 import createHttpError from "http-errors";
 // ! протестирован - не менять

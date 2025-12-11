@@ -27,7 +27,7 @@ app.use(
 app.use(express.json());
 app.use("/orders", ordersRouter);
 app.use("/products", productsRouter);
-app.use("*", notFoundHandler);
+app.use(notFoundHandler);
 app.use(errorHandler);
 
 const server = http.createServer(app);
