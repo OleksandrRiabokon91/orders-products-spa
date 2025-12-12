@@ -1,0 +1,60 @@
+type: object
+required:
+  - id
+  - title
+  - serialNumber
+  - type
+  - specification
+  - isNew
+  - photo
+  - date
+  - price
+properties:
+  id:
+    type: integer
+    example: 6
+  title:
+    type: string
+    example: "Product 6"
+  serialNumber:
+    type: integer
+    example: 1006
+  type:
+    type: string
+    example: "Laptops"
+  specification:
+    type: string
+    example: "Specification 6"
+  isNew:
+    type: integer
+    enum: [0, 1]
+    example: 1
+  photo:
+    type: [string, "null"]
+    description: "Path to product photo or null if absent"
+    examples:
+      - "pathToFile.jpg"
+      - null
+  date:
+    type: string
+    format: date-time
+    example: "2025-12-10T09:25:47.000Z"
+  price:
+    type: array
+    items:
+      type: object
+      required:
+        - value
+        - symbol
+        - isDefault
+      properties:
+        value:
+          type: string
+          example: "71.26"
+        symbol:
+          type: string
+          example: "USD"
+        isDefault:
+          type: integer
+          enum: [0, 1]
+          example: 0

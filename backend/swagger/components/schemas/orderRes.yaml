@@ -1,0 +1,57 @@
+type: object
+required:
+  - id
+  - title
+  - date
+  - formattedDate
+  - products
+  - productsCount
+  - totalUSD
+  - totalUAH
+properties:
+  id:
+    type: integer
+    example: 3
+  title:
+    type: string
+    example: Order 3
+  date:
+    type: string
+    format: date-time
+    example: "2025-12-10T09:25:47.000Z"
+  formattedDate:
+    type: string
+    example: "10.12.2025 11:25:47"
+  productsCount:
+    type: integer
+    example: 16
+  totalUSD:
+    type: string
+    example: "2744.66"
+  totalUAH:
+    type: string
+    example: "115807.99"
+  products:
+    type: array
+    items:
+      $ref: "../schemas/productRes.yaml"
+    example:
+      - id: 61
+        title: "Monitor Samsung Odyssey"
+        serialNumber: 1001
+        type: "Monitors"
+        specification: "27 inch, 144Hz, IPS"
+        isNew: 0
+        photo: null
+        date: "2025-01-10T08:00:00.000Z"
+        price:
+          - value: "150"
+            symbol: "USD"
+            isDefault: 0
+          - value: "6372"
+            symbol: "UAH"
+            isDefault: 1
+        guarantee:
+          end: "2025-01-10 08:00:00.000000"
+          start: "2025-01-10 08:00:00.000000"
+          product_id: 61

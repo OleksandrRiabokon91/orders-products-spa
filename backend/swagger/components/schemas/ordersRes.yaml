@@ -1,0 +1,32 @@
+type: object
+required:
+  - id
+  - title
+  - date
+  - formattedDate
+  - productsCount
+  - totalUSD
+  - totalUAH
+properties:
+  id:
+    type: integer
+    example: 3
+  title:
+    type: string
+    example: Order 3
+  date:
+    type: string
+    format: date-time
+    example: "2025-12-10T09:25:47.000Z"
+  formattedDate:
+    type: string
+    example: "10.12.2025 11:25:47"
+  productsCount:
+    type: integer
+    example: 16
+  totalUSD:
+    type: string
+    example: "2744.66"
+  totalUAH:
+    type: string
+    example: "115807.99"

@@ -5,7 +5,10 @@
   "main": "server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon server.js"
+    "dev": "nodemon server.js",
+    "build": "npm run build-docs",
+    "build-docs": "redocly bundle docs/openapi.yaml --ext json -o docs/swagger.json",
+    "preview-docs": "redocly preview --port 4500"
   },
   "keywords": [],
   "author": "Oleksandr Riabokon <riabokon.oleksandr@gmail.com>",
@@ -22,6 +25,7 @@
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "@redocly/cli": "^2.12.6",
     "nodemon": "^3.1.11"
   }
 }

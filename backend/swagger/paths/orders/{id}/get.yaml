@@ -1,0 +1,25 @@
+tags:
+  - Orders
+summary: Get order by id
+operationId: getOrder
+description: "Get order by id"
+parameters:
+  - in: path
+    name: id
+    required: true
+    schema:
+      type: integer
+      example: 8
+responses:
+  "200":
+    description: "Get order by id"
+    content:
+      application/json:
+        schema:
+          type: array
+          items:
+            $ref: "../../../components/schemas/orderRes.yaml"
+  "404":
+    $ref: "../../../components/responses/404.yaml"
+  "500":
+    $ref: "../../../components/responses/500.yaml"

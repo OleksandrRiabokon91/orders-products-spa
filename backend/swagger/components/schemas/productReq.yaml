@@ -1,0 +1,82 @@
+type: object
+required:
+  - serialNumber
+  - isNew
+  - price
+  - title
+  - type
+  - specification
+  - guarantee_start
+  - guarantee_end
+  - inputCurrency
+  - date
+properties:
+  serialNumber:
+    oneOf:
+      - type: integer
+      - type: string
+    examples:
+      asString:
+        value: "1001"
+      asNumber:
+        value: 1001
+
+  isNew:
+    oneOf:
+      - type: integer
+      - type: boolean
+    examples:
+      booleanTrue:
+        value: true
+      numericTrue:
+        value: 1
+
+  price:
+    oneOf:
+      - type: number
+      - type: string
+    examples:
+      asNumber:
+        value: 150
+      asString:
+        value: "150"
+
+  photo:
+    type: string
+    nullable: true
+    examples:
+      withPhoto:
+        value: "monitor-lg.jpg"
+      noPhoto:
+        value: null
+
+  title:
+    type: string
+    example: "Monitor LG"
+
+  type:
+    type: string
+    example: "Monitors"
+
+  specification:
+    type: string
+    example: 'IPS 27", 144Hz'
+
+  guarantee_start:
+    type: string
+    format: date-time
+    example: "2025-01-01T10:00:00.000Z"
+
+  guarantee_end:
+    type: string
+    format: date-time
+    example: "2025-01-01T10:00:00.000Z"
+
+  inputCurrency:
+    type: string
+    example: "UAH"
+
+  date:
+    type: string
+    format: date-time
+    example: "2025-01-01T10:00:00.000Z"

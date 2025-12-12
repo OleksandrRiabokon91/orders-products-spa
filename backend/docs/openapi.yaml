@@ -1,0 +1,51 @@
+openapi: 3.1.0
+info:
+  version: 1.0.0
+  title: Orders & Products API
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  description: REST API для управления заказами и связанными продуктами.
+
+servers:
+  - url: http://localhost:4000
+    description: Local development server
+
+security: []
+
+tags:
+  - name: Orders
+    description: CRUD-операции над заказами и управление продуктами внутри заказа.
+  - name: Products
+    description: Операции с общим списком продуктов - поиск, фильтрация, удаление.
+
+paths:
+  /orders:
+    get:
+      $ref: "../swagger/paths/orders/get.yaml"
+    post:
+      $ref: "../swagger/paths/orders/post.yaml"
+  /orders/{id}:
+    get:
+      $ref: "../swagger/paths/orders/{id}/get.yaml"
+  # /orders post
+  # /orders/{id} delete
+  # /orders/{id}/products get
+  # /orders/{id}/products post
+  # /orders/{id}/products get
+  # /orders/{id}/products/{productId} delete
+
+  # /products/ get
+  # /products/{id} get
+  # /products/{id} delete
+
+  # /students/{id}:
+  #   get:
+  #     $ref: ../swagger/paths/students/{id}/get.yaml
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

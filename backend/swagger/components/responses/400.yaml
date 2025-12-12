@@ -1,0 +1,39 @@
+description: Bad request - validation failed
+content:
+  application/json:
+    schema:
+      type: object
+      required:
+        - status
+        - message
+        - data
+      properties:
+        status:
+          type: integer
+          example: 400
+        message:
+          type: string
+          example: BadRequestError
+        data:
+          type: object
+          required:
+            - message
+            - errors
+          properties:
+            message:
+              type: string
+              example: "Validation failed"
+            errors:
+              type: array
+              items:
+                type: object
+                required:
+                  - field
+                  - message
+                properties:
+                  field:
+                    type: string
+                    example: "products.serialNumber"
+                  message:
+                    type: string
+                    example: "\"products.serialNumber\" with value \"1001--\" fails to match the required pattern: /^\\d+$/"

@@ -1,0 +1,18 @@
+tags:
+  - Orders
+summary: Get all orders list
+operationId: getOrders
+description: "Get all orders list"
+responses:
+  "200":
+    description: "Get all orders list"
+    content:
+      application/json:
+        schema:
+          type: array
+          items:
+            $ref: "../../components/schemas/ordersRes.yaml"
+  "404":
+    $ref: "../../components/responses/404.yaml"
+  "500":
+    $ref: "../../components/responses/500.yaml"

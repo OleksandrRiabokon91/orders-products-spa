@@ -1,0 +1,38 @@
+type: object
+required:
+  - title
+  - description
+  - date
+properties:
+  title:
+    type: string
+    example: "Order With Products"
+  description:
+    type: string
+    example: "Auto-created with products"
+  date:
+    type: string
+    format: date-time
+    example: "2025-01-01T10:00:00.000Z"
+
+  products:
+    description: "Single product object or array of products"
+    anyOf:
+      - type: object
+        $ref: "../../components/schemas/productReq.yaml"
+      - type: array
+        items:
+          $ref: "../../components/schemas/productReq.yaml"
+      - type: "null"
+    example:
+      serialNumber: "1001"
+      isNew: true
+      photo: "monitor-lg.jpg"
+      title: "Monitor LG"
+      type: "Monitors"
+      specification: 'IPS 27", 144Hz'
+      guarantee_start: "2025-01-01T10:00:00.000Z"
+      guarantee_end: "2025-01-01T10:00:00.000Z"
+      price: 150
+      inputCurrency: "UAH"
+      date: "2025-01-01T10:00:00.000Z"
