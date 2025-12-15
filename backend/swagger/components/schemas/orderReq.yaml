@@ -24,15 +24,3 @@ properties:
         items:
           $ref: "../../components/schemas/productReq.yaml"
       - type: "null"
-    example:
-      serialNumber: "1001"
-      isNew: true
-      photo: "monitor-lg.jpg"
-      title: "Monitor LG"
-      type: "Monitors"
-      specification: 'IPS 27", 144Hz'
-      guarantee_start: "2025-01-01T10:00:00.000Z"
-      guarantee_end: "2025-01-01T10:00:00.000Z"
-      price: 150
-      inputCurrency: "UAH"
-      date: "2025-01-01T10:00:00.000Z"

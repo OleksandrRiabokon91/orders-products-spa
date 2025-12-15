@@ -12,43 +12,20 @@ required:
   - date
 properties:
   serialNumber:
-    oneOf:
-      - type: integer
-      - type: string
-    examples:
-      asString:
-        value: "1001"
-      asNumber:
-        value: 1001
+    type: integer
+    example: 1001
 
   isNew:
-    oneOf:
-      - type: integer
-      - type: boolean
-    examples:
-      booleanTrue:
-        value: true
-      numericTrue:
-        value: 1
+    type: integer
+    example: 1
 
   price:
-    oneOf:
-      - type: number
-      - type: string
-    examples:
-      asNumber:
-        value: 150
-      asString:
-        value: "150"
+    type: string
+    example: "150"
 
   photo:
     type: string
-    nullable: true
-    examples:
-      withPhoto:
-        value: "monitor-lg.jpg"
-      noPhoto:
-        value: null
+    example: "monitor-lg.jpg"
 
   title:
     type: string

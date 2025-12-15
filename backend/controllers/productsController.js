@@ -2,12 +2,8 @@ import createHttpError from "http-errors";
 import pool from "../utils/db.js";
 import formatDateForMySQL from "../utils/formatDateForMySQL.js";
 import { getUSDUAHRate, convertPrice } from "../utils/getUSDUAHRate.js";
+
 // ! протестирован - не менять
-// GET /products
-// GET /orders/:id/products
-// GET /products?type=Monitors
-// GET /orders/:id/products?type=Monitors
-//* if not found id-order or filtered products => return []
 export const getProducts = async (req, res, next) => {
   try {
     const orderId = req.params.id || null;
@@ -59,7 +55,6 @@ export const getProducts = async (req, res, next) => {
       `,
       [productIds]
     );
-    // Сборка итоговой структуры
     const productsWithDetails = products.map((product) => {
       const productPrices = prices
         .filter((pr) => pr.product_id === product.id)
@@ -137,7 +132,7 @@ export const getProductById = async (req, res, next) => {
       [productId]
     );
     const guarantee = guaranteeRows.length ? guaranteeRows[0] : null;
-    const response = {
+    return res.status(200).json({
       ...product,
       price: prices.map((pr) => ({
         value: pr.value,
@@ -145,19 +140,15 @@ export const getProductById = async (req, res, next) => {
         isDefault: pr.isDefault,
       })),
       guarantee,
-    };
-    return res.status(200).json(response);
+    });
   } catch (err) {
     next(err);
   }
 };
 // ! протестирован - не менять
-// can use alone=> post Product
-// can usd in=> post Order Arr<Products[]>[{product},...]
-// post Order can be empty-without product Arr<Products[]>[]
 export const createProductForOrder = async (req, res, next) => {
   try {
-    const orderId = req.params.id || req.body.order_id;
+    const orderId = req.params.id ?? req.body.order_id;
     const {
       serialNumber,
       isNew,
@@ -172,7 +163,6 @@ export const createProductForOrder = async (req, res, next) => {
       inputCurrency,
     } = req.body;
     const rate = await getUSDUAHRate();
-    // Конвертация цены в обе валюты
     const { usd: price_usd, uah: price_uah } = convertPrice(
       price,
       inputCurrency,
@@ -196,23 +186,23 @@ export const createProductForOrder = async (req, res, next) => {
         formatDateForMySQL(date),
       ]);
     const productId = productResult.insertId;
-    const insertGuaranteeQuery = `
+    await pool.promise().query(
+      `
       INSERT INTO guarantees (product_id, start, end)
       VALUES (?, ?, ?)
-    `;
-    await pool
-      .promise()
-      .query(insertGuaranteeQuery, [
+      `,
+      [
         productId,
         formatDateForMySQL(guarantee_start),
         formatDateForMySQL(guarantee_end),
-      ]);
-    //! Дефолтная валюта для всей базы = UAH
-    //! При изменении дефолтной валюты в базе соответственно изменить значение DEFAULT_CURRENCY
+      ]
+    );
     const DEFAULT_CURRENCY = "UAH";
     await pool.promise().query(
-      `INSERT INTO prices (product_id, value, symbol, isDefault)
-       VALUES (?, ?, 'USD', ?), (?, ?, 'UAH', ?)`,
+      `
+      INSERT INTO prices (product_id, value, symbol, isDefault)
+      VALUES (?, ?, 'USD', ?), (?, ?, 'UAH', ?)
+      `,
       [
         productId,
         price_usd,
@@ -222,34 +212,35 @@ export const createProductForOrder = async (req, res, next) => {
         DEFAULT_CURRENCY === "UAH" ? 1 : 0,
       ]
     );
-    //Получаем продукт из базы с JOIN, чтобы вернуть единообразный ответ
     const [rows] = await pool.promise().query(
-      `SELECT
-          p.id,
-          p.title,
-          p.serialNumber,
-          p.type,
-          p.specification,
-          p.isNew,
-          p.photo,
-          p.date,
-          JSON_ARRAYAGG(
-            JSON_OBJECT(
-              'value', pr.value,
-              'symbol', pr.symbol,
-              'isDefault', pr.isDefault
-            )
-          ) AS price,
+      `
+      SELECT
+        p.id,
+        p.title,
+        p.serialNumber,
+        p.type,
+        p.specification,
+        p.isNew,
+        p.photo,
+        p.date,
+        JSON_ARRAYAGG(
           JSON_OBJECT(
-            'product_id', g.product_id,
-            'start', g.start,
-            'end', g.end
-          ) AS guarantee
-       FROM products p
-       LEFT JOIN prices pr ON pr.product_id = p.id
-       LEFT JOIN guarantees g ON g.product_id = p.id
-       WHERE p.id = ?
-       GROUP BY p.id`,
+            'value', pr.value,
+            'symbol', pr.symbol,
+            'isDefault', pr.isDefault
+          )
+        ) AS price,
+        JSON_OBJECT(
+          'product_id', g.product_id,
+          'start', g.start,
+          'end', g.end
+        ) AS guarantee
+      FROM products p
+      LEFT JOIN prices pr ON pr.product_id = p.id
+      LEFT JOIN guarantees g ON g.product_id = p.id
+      WHERE p.id = ?
+      GROUP BY p.id
+      `,
       [productId]
     );
     return res.status(201).json(rows[0]);

@@ -1,7 +1,10 @@
 import pool from "../utils/db.js";
 import formatDateForMySQL from "../utils/formatDateForMySQL.js";
+import { getOrderProductsByOrderId } from "../utils/getOrderProductsByOrderId.js";
+import { getOrderSummaryById } from "../utils/getOrderSummaryById.js";
 import { createProductForOrder } from "./productsController.js";
 import createHttpError from "http-errors";
+
 // ! протестирован - не менять
 export const getAllOrders = async (req, res, next) => {
   try {
@@ -26,103 +29,25 @@ export const getAllOrders = async (req, res, next) => {
     next(err);
   }
 };
+
 // ! протестирован - не менять
 export const getOrderById = async (req, res, next) => {
   try {
     const orderId = req.params.id;
-    const [orders] = await pool.promise().query(
-      `
-      SELECT 
-        o.id,
-        o.title,
-        o.date,
-        DATE_FORMAT(o.date, '%d.%m.%Y %H:%i:%s') AS formattedDate
-      FROM orders o
-      WHERE o.id = ?
-      `,
-      [orderId]
-    );
-    if (!orders.length) {
+    const orderSummary = await getOrderSummaryById(orderId);
+    if (!orderSummary) {
       throw createHttpError(404, "Order not found");
     }
-    const order = orders[0];
-    const [products] = await pool.promise().query(
-      `
-      SELECT 
-        p.id,
-        p.title,
-        p.serialNumber,
-        p.type,
-        p.specification,
-        p.isNew,
-        p.photo,
-        p.date
-      FROM products p
-      WHERE p.order_id = ?
-      `,
-      [orderId]
-    );
-    if (!products.length) {
-      return res.status(200).json({
-        ...order,
-        products: [],
-        productsCount: 0,
-        totalUSD: 0,
-        totalUAH: 0,
-      });
-    }
-    const productIds = products.map((p) => p.id);
-    const [prices] = await pool.promise().query(
-      `
-      SELECT product_id, value, symbol, isDefault
-      FROM prices
-      WHERE product_id IN (?)
-      `,
-      [productIds]
-    );
-    const [guarantees] = await pool.promise().query(
-      `
-      SELECT product_id, start, end
-      FROM guarantees
-      WHERE product_id IN (?)
-      `,
-      [productIds]
-    );
-    const productsWithDetails = products.map((product) => {
-      const productPrices = prices
-        .filter((pr) => pr.product_id === product.id)
-        .map((pr) => ({
-          value: pr.value,
-          symbol: pr.symbol,
-          isDefault: pr.isDefault,
-        }));
-      const productGuarantee = guarantees.find(
-        (g) => g.product_id === product.id
-      );
-      return {
-        ...product,
-        price: productPrices,
-        guarantee: productGuarantee || null,
-      };
+    const products = await getOrderProductsByOrderId(orderId);
+    return res.status(200).json({
+      ...orderSummary,
+      products,
     });
-    let totalUSD = 0;
-    let totalUAH = 0;
-    prices.forEach((pr) => {
-      if (pr.symbol === "USD") totalUSD += Number(pr.value);
-      if (pr.symbol === "UAH") totalUAH += Number(pr.value);
-    });
-    const response = {
-      ...order,
-      products: productsWithDetails,
-      productsCount: productsWithDetails.length,
-      totalUSD: totalUSD.toFixed(2),
-      totalUAH: totalUAH.toFixed(2),
-    };
-    return res.status(200).json(response);
   } catch (err) {
     next(err);
   }
 };
+
 // ! протестирован - не менять
 export const createOrder = async (req, res, next) => {
   try {
@@ -136,95 +61,28 @@ export const createOrder = async (req, res, next) => {
       .promise()
       .query(insertOrderQuery, [title, description, formattedDate]);
     const orderId = orderResult.insertId;
-    let createdProducts = [];
-    let productsArray = products;
-    if (products && !Array.isArray(products)) {
-      productsArray = [products];
+    let productsArray = null;
+    if (products) {
+      productsArray = Array.isArray(products) ? products : [products];
     }
     if (Array.isArray(productsArray) && productsArray.length > 0) {
       for (const product of productsArray) {
-        // "фейковый" req/res для повторного использования контроллера createProductForOrder
         const fakeReq = {
           params: { id: orderId },
           body: { ...product, order_id: orderId },
         };
         const fakeRes = {
           status: () => fakeRes,
-          json: (data) => createdProducts.push(data),
+          json: () => {},
         };
         await createProductForOrder(fakeReq, fakeRes, next);
       }
     }
-    // запрос в базу и формирование единообразной структуры респонса
-    const [rawProducts] = await pool.promise().query(
-      `
-      SELECT 
-        p.id,
-        p.title,
-        p.serialNumber,
-        p.type,
-        p.specification,
-        p.isNew,
-        p.photo,
-        p.date
-      FROM products p
-      WHERE p.order_id = ?
-      `,
-      [orderId]
-    );
-    let productsWithDetails = [];
-    let totalUSD = 0;
-    let totalUAH = 0;
-    if (rawProducts.length > 0) {
-      const productIds = rawProducts.map((p) => p.id);
-      const [prices] = await pool.promise().query(
-        `
-        SELECT product_id, value, symbol, isDefault
-        FROM prices
-        WHERE product_id IN (?)
-        `,
-        [productIds]
-      );
-      const [guarantees] = await pool.promise().query(
-        `
-        SELECT product_id, start, end
-        FROM guarantees
-        WHERE product_id IN (?)
-        `,
-        [productIds]
-      );
-      productsWithDetails = rawProducts.map((product) => {
-        const productPrices = prices
-          .filter((pr) => pr.product_id === product.id)
-          .map((pr) => ({
-            value: pr.value,
-            symbol: pr.symbol,
-            isDefault: pr.isDefault,
-          }));
-
-        const productGuarantee = guarantees.find(
-          (g) => g.product_id === product.id
-        );
-        return {
-          ...product,
-          price: productPrices,
-          guarantee: productGuarantee || null,
-        };
-      });
-      prices.forEach((pr) => {
-        if (pr.symbol === "USD") totalUSD += Number(pr.value);
-        if (pr.symbol === "UAH") totalUAH += Number(pr.value);
-      });
-    }
+    const orderSummary = await getOrderSummaryById(orderId);
+    const orderProducts = await getOrderProductsByOrderId(orderId);
     return res.status(201).json({
-      id: orderId,
-      title,
-      description,
-      date: formattedDate,
-      products: productsWithDetails,
-      productsCount: productsWithDetails.length,
-      totalUSD: totalUSD.toFixed(2),
-      totalUAH: totalUAH.toFixed(2),
+      ...orderSummary,
+      products: orderProducts,
     });
   } catch (err) {
     next(err);
