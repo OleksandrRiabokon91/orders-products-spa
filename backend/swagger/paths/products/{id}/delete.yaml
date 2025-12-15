@@ -1,0 +1,45 @@
+tags:
+  - Products
+summary: Delete product by id
+operationId: deleteProduct
+description: >
+  Deletes a product by its ID.
+  If the product exists, it will be permanently removed from the system.
+  This operation is irreversible.
+  If the product does not exist, a 404 error is returned.
+
+parameters:
+  - in: path
+    name: id
+    required: true
+    description: Product ID
+    schema:
+      type: integer
+      example: 78
+
+responses:
+  "204":
+    description: Product successfully deleted
+
+  "404":
+    description: Product not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: NotFoundError
+            data:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Product not found
+
+  "500":
+    $ref: "../../../components/responses/500.yaml"

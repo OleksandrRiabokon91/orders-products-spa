@@ -1,0 +1,44 @@
+tags:
+  - Orders
+summary: Delete order by id
+operationId: deleteOrder
+description: Deletes an order by its ID.
+  The deletion is performed as a cascade operation.
+  All entities associated with the order are removed together with the order itself, including
+  - all products belonging to the order;
+  - product guarantees;
+  - product prices and currency relations;
+  - any other order-related data stored in the database.
+  If the order does not exist, a 404 error is returned.
+  On successful deletion, the server returns a 204 No Content response with an empty body.
+parameters:
+  - in: path
+    name: id
+    required: true
+    schema:
+      type: integer
+      example: 8
+responses:
+  "204":
+    description: Order successfully deleted
+  "404":
+    description: Order not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: NotFoundError
+            data:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Order not found
+  "500":
+    $ref: "../../../components/responses/500.yaml"

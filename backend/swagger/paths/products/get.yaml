@@ -1,0 +1,39 @@
+tags:
+  - Products
+summary: Get all products
+operationId: getProducts
+description: >
+  Returns a list of all products.
+  Optional filtering by equipment type is supported.
+  If no products are found, an empty array is returned.
+
+parameters:
+  - in: query
+    name: type
+    required: false
+    description: Filter products by equipment type
+    schema:
+      type: string
+      enum:
+        - Monitors
+        - Keyboards
+        - Mice
+        - Cameras
+        - Printers
+        - Speakers
+        - Headsets
+        - Routers
+      example: Mice
+responses:
+  "200":
+    description: List of products
+    content:
+      application/json:
+        schema:
+          type: array
+          items:
+            $ref: "../../components/schemas/productRes.yaml"
+  "404":
+    $ref: "../../components/responses/404.yaml"
+  "500":
+    $ref: "../../components/responses/500.yaml"

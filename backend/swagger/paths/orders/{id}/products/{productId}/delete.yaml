@@ -1,0 +1,47 @@
+tags:
+  - Orders
+summary: Delete product from order
+operationId: deleteProductFromOrder
+description: >
+  Deletes a product belonging to a specific order.
+  If the order does not exist, a 404 error is returned.
+  If the product does not exist in the order, a 404 error is returned.
+parameters:
+  - in: path
+    name: id
+    required: true
+    description: Order ID
+    schema:
+      type: integer
+      example: 1
+  - in: path
+    name: productId
+    required: true
+    description: Product ID
+    schema:
+      type: integer
+      example: 78
+responses:
+  "204":
+    description: Product successfully deleted from order
+  "404":
+    description: Order or product not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: NotFoundError
+            data:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Order or product not found
+  "500":
+    $ref: "../../../../../components/responses/500.yaml"

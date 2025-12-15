@@ -26,9 +26,11 @@ export const createOrderSchema = Joi.object({
       "alternatives.types":
         "Products must be either a single product object or an array of products.",
     }),
-}).prefs({
-  messages: {
-    "any.required": "{#label} is required.",
-    "any.invalid": "{#label} is invalid.",
-  },
-});
+})
+  .unknown(false)
+  .prefs({
+    messages: {
+      "any.required": "{#label} is required.",
+      "any.invalid": "{#label} is invalid.",
+    },
+  });

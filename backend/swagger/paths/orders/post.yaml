@@ -3,24 +3,19 @@ tags:
 summary: Create a new order
 operationId: createOrder
 description: "Create a new order. Products can be omitted, provided as a single object, or as an array."
-
 requestBody:
   required: true
   content:
     application/json:
       schema:
-        type: object
         $ref: "../../components/schemas/orderReq.yaml"
-
 responses:
   "201":
     description: Order successfully created
     content:
       application/json:
         schema:
-          type: object
-          $ref: "../../components/schemas/orderReq.yaml"
-
+          $ref: "../../components/schemas/orderRes.yaml"
   "400":
     $ref: "../../components/responses/400.yaml"
   "500":

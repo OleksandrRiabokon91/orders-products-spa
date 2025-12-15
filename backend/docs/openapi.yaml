@@ -15,7 +15,7 @@ security: []
 
 tags:
   - name: Orders
-    description: CRUD-операции над заказами и управление продуктами внутри заказа.
+    description: CRUD-операции над заказами и управление продуктами внутри заказа - поиск, фильтрация, удаление.
   - name: Products
     description: Операции с общим списком продуктов - поиск, фильтрация, удаление.
 
@@ -28,20 +28,24 @@ paths:
   /orders/{id}:
     get:
       $ref: "../swagger/paths/orders/{id}/get.yaml"
-  # /orders post
-  # /orders/{id} delete
-  # /orders/{id}/products get
-  # /orders/{id}/products post
-  # /orders/{id}/products get
-  # /orders/{id}/products/{productId} delete
-
-  # /products/ get
-  # /products/{id} get
-  # /products/{id} delete
-
-  # /students/{id}:
-  #   get:
-  #     $ref: ../swagger/paths/students/{id}/get.yaml
+    delete:
+      $ref: "../swagger/paths/orders/{id}/delete.yaml"
+  /orders/{id}/products:
+    get:
+      $ref: "../swagger/paths/orders/{id}/products/get.yaml"
+    post:
+      $ref: "../swagger/paths/orders/{id}/products/post.yaml"
+  /orders/{id}/products/{productId}:
+    delete:
+      $ref: "../swagger/paths/orders/{id}/products/{productId}/delete.yaml"
+  /products:
+    get:
+      $ref: "../swagger/paths/products/get.yaml"
+  /products/{id}:
+    get:
+      $ref: "../swagger/paths/products/{id}/get.yaml"
+    delete:
+      $ref: "../swagger/paths/products/{id}/delete.yaml"
 
 components:
   securitySchemes:

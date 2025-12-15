@@ -1,0 +1,52 @@
+tags:
+  - Orders
+summary: Add product to order
+operationId: createProductForOrder
+description: >
+  Adds a new product to the specified order.
+  The request body must contain a valid product object.
+  If the order exists, the product will be created and attached to it.
+parameters:
+  - in: path
+    name: id
+    required: true
+    schema:
+      type: integer
+      example: 1
+    description: Order ID
+requestBody:
+  required: true
+  content:
+    application/json:
+      schema:
+        $ref: "../../../../components/schemas/productReq.yaml"
+responses:
+  "201":
+    description: Product successfully created and added to the order
+    content:
+      application/json:
+        schema:
+          $ref: "../../../../components/schemas/productRes.yaml"
+  "404":
+    description: Order not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: NotFoundError
+            data:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Order not found
+  "400":
+    $ref: "../../../../components/responses/400.yaml"
+  "500":
+    $ref: "../../../../components/responses/500.yaml"

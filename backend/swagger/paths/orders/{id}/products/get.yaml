@@ -1,0 +1,65 @@
+tags:
+  - Orders
+summary: Get products by order
+operationId: getOrderProducts
+description: >
+  Returns a list of products belonging to the specified order.
+  The response contains only products without order data.
+  An empty array is returned if the order exists but has no products.
+  Optional filtering by product type is supported.
+parameters:
+  - in: path
+    name: id
+    required: true
+    schema:
+      type: integer
+      example: 1
+    description: Order ID
+  - in: query
+    name: type
+    required: false
+    schema:
+      type: string
+      enum:
+        - Monitors
+        - Keyboards
+        - Mice
+        - Cameras
+        - Printers
+        - Speakers
+        - Headsets
+        - Routers
+      example: Mice
+    description: >
+      Filter products by the equipment type in the order.
+      If the desired type is not found in the order, an empty array will be returned.
+responses:
+  "200":
+    description: List of products for the specified order
+    content:
+      application/json:
+        schema:
+          type: array
+          items:
+          $ref: "../../../../components/schemas/productRes.yaml"
+  "404":
+    description: Order not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: NotFoundError
+            data:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Order not found
+  "500":
+    $ref: "../../../../components/responses/500.yaml"

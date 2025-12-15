@@ -1,0 +1,1090 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "version": "1.0.0",
+    "title": "Orders & Products API",
+    "license": {
+      "name": "Apache 2.0",
+      "url": "http://www.apache.org/licenses/LICENSE-2.0.html"
+    },
+    "description": "REST API для управления заказами и связанными продуктами."
+  },
+  "servers": [
+    {
+      "url": "http://localhost:4000",
+      "description": "Local development server"
+    }
+  ],
+  "security": [],
+  "tags": [
+    {
+      "name": "Orders",
+      "description": "CRUD-операции над заказами и управление продуктами внутри заказа - поиск, фильтрация, удаление."
+    },
+    {
+      "name": "Products",
+      "description": "Операции с общим списком продуктов - поиск, фильтрация, удаление."
+    }
+  ],
+  "paths": {
+    "/orders": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Get all orders list",
+        "operationId": "getOrders",
+        "description": "Get all orders list",
+        "responses": {
+          "200": {
+            "description": "Get all orders list",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ordersRes"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Create a new order",
+        "operationId": "createOrder",
+        "description": "Create a new order. Products can be omitted, provided as a single object, or as an array.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/orderReq"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Order successfully created",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/orderRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/orders/{id}": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Get order by id",
+        "operationId": "getOrder",
+        "description": "Get order by id",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 8
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Get order by id",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/orderRes"
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Delete order by id",
+        "operationId": "deleteOrder",
+        "description": "Deletes an order by its ID. The deletion is performed as a cascade operation. All entities associated with the order are removed together with the order itself, including - all products belonging to the order; - product guarantees; - product prices and currency relations; - any other order-related data stored in the database. If the order does not exist, a 404 error is returned. On successful deletion, the server returns a 204 No Content response with an empty body.",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 8
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Order successfully deleted"
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "NotFoundError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Order not found"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/orders/{id}/products": {
+      "get": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Get products by order",
+        "operationId": "getOrderProducts",
+        "description": "Returns a list of products belonging to the specified order. The response contains only products without order data. An empty array is returned if the order exists but has no products. Optional filtering by product type is supported.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            },
+            "description": "Order ID"
+          },
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Monitors",
+                "Keyboards",
+                "Mice",
+                "Cameras",
+                "Printers",
+                "Speakers",
+                "Headsets",
+                "Routers"
+              ],
+              "example": "Mice"
+            },
+            "description": "Filter products by the equipment type in the order. If the desired type is not found in the order, an empty array will be returned.\n"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products for the specified order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": null,
+                  "$ref": "#/components/schemas/productRes"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "NotFoundError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Order not found"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Add product to order",
+        "operationId": "createProductForOrder",
+        "description": "Adds a new product to the specified order. The request body must contain a valid product object. If the order exists, the product will be created and attached to it.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "example": 1
+            },
+            "description": "Order ID"
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/productReq"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Product successfully created and added to the order",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/productRes"
+                }
+              }
+            }
+          },
+          "400": {
+            "$ref": "#/components/responses/400"
+          },
+          "404": {
+            "description": "Order not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "NotFoundError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Order not found"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/orders/{id}/products/{productId}": {
+      "delete": {
+        "tags": [
+          "Orders"
+        ],
+        "summary": "Delete product from order",
+        "operationId": "deleteProductFromOrder",
+        "description": "Deletes a product belonging to a specific order. If the order does not exist, a 404 error is returned. If the product does not exist in the order, a 404 error is returned.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "Order ID",
+            "schema": {
+              "type": "integer",
+              "example": 1
+            }
+          },
+          {
+            "in": "path",
+            "name": "productId",
+            "required": true,
+            "description": "Product ID",
+            "schema": {
+              "type": "integer",
+              "example": 78
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product successfully deleted from order"
+          },
+          "404": {
+            "description": "Order or product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "NotFoundError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Order or product not found"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/products": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get all products",
+        "operationId": "getProducts",
+        "description": "Returns a list of all products. Optional filtering by equipment type is supported. If no products are found, an empty array is returned.\n",
+        "parameters": [
+          {
+            "in": "query",
+            "name": "type",
+            "required": false,
+            "description": "Filter products by equipment type",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "Monitors",
+                "Keyboards",
+                "Mice",
+                "Cameras",
+                "Printers",
+                "Speakers",
+                "Headsets",
+                "Routers"
+              ],
+              "example": "Mice"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "List of products",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/productRes"
+                  }
+                }
+              }
+            }
+          },
+          "404": {
+            "$ref": "#/components/responses/404"
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    },
+    "/products/{id}": {
+      "get": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Get product by id",
+        "operationId": "getProduct",
+        "description": "Returns a single product by its ID. If the product does not exist, a 404 error is returned.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "Product ID",
+            "schema": {
+              "type": "integer",
+              "example": 78
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Product found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/productRes"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "NotFoundError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Product not found"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "Products"
+        ],
+        "summary": "Delete product by id",
+        "operationId": "deleteProduct",
+        "description": "Deletes a product by its ID. If the product exists, it will be permanently removed from the system. This operation is irreversible. If the product does not exist, a 404 error is returned.\n",
+        "parameters": [
+          {
+            "in": "path",
+            "name": "id",
+            "required": true,
+            "description": "Product ID",
+            "schema": {
+              "type": "integer",
+              "example": 78
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Product successfully deleted"
+          },
+          "404": {
+            "description": "Product not found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "integer",
+                      "example": 404
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "NotFoundError"
+                    },
+                    "data": {
+                      "type": "object",
+                      "properties": {
+                        "message": {
+                          "type": "string",
+                          "example": "Product not found"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "500": {
+            "$ref": "#/components/responses/500"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    },
+    "schemas": {
+      "ordersRes": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "date",
+          "formattedDate",
+          "productsCount",
+          "totalUSD",
+          "totalUAH"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 3
+          },
+          "title": {
+            "type": "string",
+            "example": "Order 3"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-12-10T09:25:47.000Z"
+          },
+          "formattedDate": {
+            "type": "string",
+            "example": "10.12.2025 11:25:47"
+          },
+          "productsCount": {
+            "type": "integer",
+            "example": 16
+          },
+          "totalUSD": {
+            "type": "string",
+            "example": "2744.66"
+          },
+          "totalUAH": {
+            "type": "string",
+            "example": "115807.99"
+          }
+        }
+      },
+      "productReq": {
+        "type": "object",
+        "required": [
+          "serialNumber",
+          "isNew",
+          "price",
+          "title",
+          "type",
+          "specification",
+          "inputCurrency",
+          "date"
+        ],
+        "properties": {
+          "serialNumber": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "example": 1001,
+                "description": "Preferred type is number (integer). Serial number of the product. String values consisting only of digits are accepted and automatically converted to integer by the backend.\n"
+              },
+              {
+                "type": "string",
+                "pattern": "^\\d+$",
+                "example": "1001",
+                "description": "Preferred type is number (integer). Serial number of the product. String values consisting only of digits are accepted and automatically converted to integer by the backend.\n"
+              }
+            ]
+          },
+          "isNew": {
+            "oneOf": [
+              {
+                "type": "integer",
+                "enum": [
+                  0,
+                  1
+                ],
+                "example": 1,
+                "description": "Preferred type is number (integer). Indicates whether the product is new. Boolean values are accepted and converted to 1 (true) or 0 (false).\n"
+              },
+              {
+                "type": "boolean",
+                "example": true,
+                "description": "Preferred type is number (integer). Indicates whether the product is new. Boolean values are accepted and converted to 1 (true) or 0 (false).\n"
+              }
+            ]
+          },
+          "price": {
+            "oneOf": [
+              {
+                "type": "number",
+                "format": "decimal",
+                "example": 150.55,
+                "description": "Preferred type is number (decimal). Product price. String numeric values are accepted and converted to number.\n"
+              },
+              {
+                "type": "string",
+                "pattern": "^\\d+(\\.\\d{1,2})?$",
+                "example": "150.55",
+                "description": "Preferred type is number (decimal). Product price. String numeric values are accepted and converted to number.\n"
+              }
+            ]
+          },
+          "photo": {
+            "type": "string",
+            "example": "monitor-lg.jpg"
+          },
+          "title": {
+            "type": "string",
+            "example": "Monitor LG"
+          },
+          "type": {
+            "type": "string",
+            "example": "Monitors"
+          },
+          "specification": {
+            "type": "string",
+            "example": "IPS 27\", 144Hz"
+          },
+          "guarantee_start": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-01-01T10:00:00.000Z"
+          },
+          "guarantee_end": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-01-01T10:00:00.000Z"
+          },
+          "inputCurrency": {
+            "type": "string",
+            "enum": [
+              "UAH",
+              "USD"
+            ],
+            "example": "UAH"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-01-01T10:00:00.000Z"
+          }
+        }
+      },
+      "orderReq": {
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "date"
+        ],
+        "properties": {
+          "title": {
+            "type": "string",
+            "example": "Order With Products"
+          },
+          "description": {
+            "type": "string",
+            "example": "Auto-created with products"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-01-01T10:00:00.000Z"
+          },
+          "products": {
+            "description": "Single product object or array of products",
+            "anyOf": [
+              {
+                "type": "object",
+                "$ref": "#/components/schemas/productReq"
+              },
+              {
+                "type": "array",
+                "items": null,
+                "$ref": "#/components/schemas/productReq"
+              }
+            ]
+          }
+        }
+      },
+      "productRes": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "serialNumber",
+          "type",
+          "specification",
+          "isNew",
+          "photo",
+          "date",
+          "price"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 6
+          },
+          "title": {
+            "type": "string",
+            "example": "Product 6"
+          },
+          "serialNumber": {
+            "type": "integer",
+            "example": 1006
+          },
+          "type": {
+            "type": "string",
+            "example": "Laptops"
+          },
+          "specification": {
+            "type": "string",
+            "example": "Specification 6"
+          },
+          "isNew": {
+            "type": "integer",
+            "enum": [
+              0,
+              1
+            ],
+            "example": 1
+          },
+          "photo": {
+            "type": [
+              "string",
+              "null"
+            ],
+            "description": "Path to product photo or null if absent",
+            "examples": [
+              "pathToFile.jpg",
+              null
+            ]
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-12-10T09:25:47.000Z"
+          },
+          "price": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "required": [
+                "value",
+                "symbol",
+                "isDefault"
+              ],
+              "properties": {
+                "value": {
+                  "type": "string",
+                  "example": "71.26"
+                },
+                "symbol": {
+                  "type": "string",
+                  "example": "USD"
+                },
+                "isDefault": {
+                  "type": "integer",
+                  "enum": [
+                    0,
+                    1
+                  ],
+                  "example": 0
+                }
+              }
+            }
+          }
+        }
+      },
+      "orderRes": {
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "date",
+          "formattedDate",
+          "products",
+          "productsCount",
+          "totalUSD",
+          "totalUAH"
+        ],
+        "properties": {
+          "id": {
+            "type": "integer",
+            "example": 3
+          },
+          "title": {
+            "type": "string",
+            "example": "Order 3"
+          },
+          "date": {
+            "type": "string",
+            "format": "date-time",
+            "example": "2025-12-10T09:25:47.000Z"
+          },
+          "formattedDate": {
+            "type": "string",
+            "example": "10.12.2025 11:25:47"
+          },
+          "productsCount": {
+            "type": "integer",
+            "example": 16
+          },
+          "totalUSD": {
+            "type": "string",
+            "example": "2744.66"
+          },
+          "totalUAH": {
+            "type": "string",
+            "example": "115807.99"
+          },
+          "products": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/productRes"
+            },
+            "example": [
+              {
+                "id": 61,
+                "title": "Monitor Samsung Odyssey",
+                "serialNumber": 1001,
+                "type": "Monitors",
+                "specification": "27 inch, 144Hz, IPS",
+                "isNew": 0,
+                "photo": null,
+                "date": "2025-01-10T08:00:00.000Z",
+                "price": [
+                  {
+                    "value": "150",
+                    "symbol": "USD",
+                    "isDefault": 0
+                  },
+                  {
+                    "value": "6372",
+                    "symbol": "UAH",
+                    "isDefault": 1
+                  }
+                ],
+                "guarantee": {
+                  "end": "2025-01-10 08:00:00.000000",
+                  "start": "2025-01-10 08:00:00.000000",
+                  "product_id": 61
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "responses": {
+      "400": {
+        "description": "Bad request - validation failed",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 400
+                },
+                "message": {
+                  "type": "string",
+                  "example": "BadRequestError"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "message",
+                    "errors"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Validation failed"
+                    },
+                    "errors": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "required": [
+                          "field",
+                          "message"
+                        ],
+                        "properties": {
+                          "field": {
+                            "type": "string",
+                            "example": "products.serialNumber"
+                          },
+                          "message": {
+                            "type": "string",
+                            "example": "\"products.serialNumber\" with value \"1001--\" fails to match the required pattern: /^\\d+$/"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "404": {
+        "description": "Route not found",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message",
+                "data"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 404
+                },
+                "message": {
+                  "type": "string",
+                  "example": "NotFoundError"
+                },
+                "data": {
+                  "type": "object",
+                  "required": [
+                    "message"
+                  ],
+                  "properties": {
+                    "message": {
+                      "type": "string",
+                      "example": "Route not found"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      },
+      "500": {
+        "description": "Internal Server Error",
+        "content": {
+          "application/json": {
+            "schema": {
+              "type": "object",
+              "required": [
+                "status",
+                "message"
+              ],
+              "properties": {
+                "status": {
+                  "type": "integer",
+                  "example": 500
+                },
+                "message": {
+                  "type": "string",
+                  "example": "Internal Server Error"
+                },
+                "data": {
+                  "type": "object",
+                  "example": {}
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

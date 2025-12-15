@@ -6,53 +6,81 @@ required:
   - title
   - type
   - specification
-  - guarantee_start
-  - guarantee_end
   - inputCurrency
   - date
 properties:
   serialNumber:
-    type: integer
-    example: 1001
-
+    oneOf:
+      - type: integer
+        example: 1001
+        description: >
+          Preferred type is number (integer).
+          Serial number of the product.
+          String values consisting only of digits are accepted and
+          automatically converted to integer by the backend.
+      - type: string
+        pattern: '^\d+$'
+        example: "1001"
+        description: >
+          Preferred type is number (integer).
+          Serial number of the product.
+          String values consisting only of digits are accepted and
+          automatically converted to integer by the backend.
   isNew:
-    type: integer
-    example: 1
-
+    oneOf:
+      - type: integer
+        enum: [0, 1]
+        example: 1
+        description: >
+          Preferred type is number (integer).
+          Indicates whether the product is new.
+          Boolean values are accepted and converted to 1 (true) or 0 (false).
+      - type: boolean
+        example: true
+        description: >
+          Preferred type is number (integer).
+          Indicates whether the product is new.
+          Boolean values are accepted and converted to 1 (true) or 0 (false).
   price:
-    type: string
-    example: "150"
-
+    oneOf:
+      - type: number
+        format: decimal
+        example: 150.55
+        description: >
+          Preferred type is number (decimal).
+          Product price.
+          String numeric values are accepted and converted to number.
+      - type: string
+        pattern: '^\d+(\.\d{1,2})?$'
+        example: "150.55"
+        description: >
+          Preferred type is number (decimal).
+          Product price.
+          String numeric values are accepted and converted to number.
   photo:
     type: string
     example: "monitor-lg.jpg"
-
   title:
     type: string
     example: "Monitor LG"
-
   type:
     type: string
     example: "Monitors"
-
   specification:
     type: string
     example: 'IPS 27", 144Hz'
-
   guarantee_start:
     type: string
     format: date-time
     example: "2025-01-01T10:00:00.000Z"
-
   guarantee_end:
     type: string
     format: date-time
     example: "2025-01-01T10:00:00.000Z"
-
   inputCurrency:
     type: string
+    enum: ["UAH", "USD"]
     example: "UAH"
-
   date:
     type: string
     format: date-time

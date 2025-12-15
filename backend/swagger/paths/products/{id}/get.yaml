@@ -1,0 +1,47 @@
+tags:
+  - Products
+summary: Get product by id
+operationId: getProduct
+description: >
+  Returns a single product by its ID.
+  If the product does not exist, a 404 error is returned.
+
+parameters:
+  - in: path
+    name: id
+    required: true
+    description: Product ID
+    schema:
+      type: integer
+      example: 78
+
+responses:
+  "200":
+    description: Product found
+    content:
+      application/json:
+        schema:
+          $ref: "../../../components/schemas/productRes.yaml"
+
+  "404":
+    description: Product not found
+    content:
+      application/json:
+        schema:
+          type: object
+          properties:
+            status:
+              type: integer
+              example: 404
+            message:
+              type: string
+              example: NotFoundError
+            data:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Product not found
+
+  "500":
+    $ref: "../../../components/responses/500.yaml"

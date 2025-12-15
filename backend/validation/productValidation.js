@@ -21,7 +21,7 @@ export const createProductSchema = Joi.object({
   serialNumber: Joi.alternatives()
     .try(Joi.number().integer().min(0), Joi.string().trim().pattern(/^\d+$/))
     .required()
-    .custom((value, helpers) => {
+    .custom((value) => {
       return typeof value === "string" ? parseInt(value, 10) : value;
     }),
 
@@ -69,9 +69,11 @@ export const createProductSchema = Joi.object({
       "string.base": "{#label} must be a string",
       "any.required": "{#label} is required",
     }),
-}).prefs({
-  messages: {
-    "any.required": "{#label} is required",
-    "any.invalid": "{#label} is invalid",
-  },
-});
+})
+  .unknown(false)
+  .prefs({
+    messages: {
+      "any.required": "{#label} is required",
+      "any.invalid": "{#label} is invalid",
+    },
+  });

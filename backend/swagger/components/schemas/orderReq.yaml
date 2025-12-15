@@ -14,7 +14,6 @@ properties:
     type: string
     format: date-time
     example: "2025-01-01T10:00:00.000Z"
-
   products:
     description: "Single product object or array of products"
     anyOf:
@@ -22,5 +21,4 @@ properties:
         $ref: "../../components/schemas/productReq.yaml"
       - type: array
         items:
-          $ref: "../../components/schemas/productReq.yaml"
-      - type: "null"
+        $ref: "../../components/schemas/productReq.yaml"
