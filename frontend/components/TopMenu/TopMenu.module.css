@@ -1,0 +1,56 @@
+.header {
+  position: sticky;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 60px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  padding: 0 20px;
+
+  background-color: #ffffff;
+  color: #2f3c4e;
+  z-index: 1000;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  font-weight: 600;
+  font-size: 1.2rem;
+  gap: 8px;
+}
+.logo_text {
+  color: #88c057;
+}
+
+.icon {
+  display: inline-block;
+  vertical-align: middle;
+}
+.datetime .icon {
+  fill: #88c057;
+}
+
+.datetime li:first-child .icon {
+  fill: #2f3c4e;
+}
+
+.datetime {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 0.9rem;
+}
+
+.datetime li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
