@@ -1,27 +1,11 @@
-// "use client";
-// import Image from "next/image";
-// import styles from "./page.module.css";
-// import { io, Socket } from "socket.io-client";
-
-// import { useEffect, useState } from "react";
-// import { DefaultEventsMap } from "@socket.io/component-emitter";
+// import Link from "next/link";
+import css from "./page.module.css";
 
 export default function Home() {
-  // const [count, setCount] = useState(0);
-
-  // useEffect(() => {
-  //   const socket: Socket<DefaultEventsMap, DefaultEventsMap> = io(
-  //     process.env.NEXT_PUBLIC_API_URL
-  //   );
-
-  //   socket.on("sessions", (value: number) => {
-  //     setCount(value);
-  //   });
-
-  //   return () => {
-  //     socket.disconnect();
-  //   };
-  // }, []);
-
-  return <p>socket counter: 0</p>;
+  return (
+    <div className={css.container}>
+      <h1>Добро пожаловать!</h1>
+      <p>Выберите раздел слева, чтобы начать работу.</p>
+    </div>
+  );
 }

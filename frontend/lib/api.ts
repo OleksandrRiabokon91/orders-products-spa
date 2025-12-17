@@ -10,102 +10,65 @@ export const api = axios.create({
 export interface OrdersRes {
   id: number;
   title: string;
-  date: Date;
-  description: string;
+  date: string; // ISO string, раньше было Date
+  formattedDate: string; // новый формат для UI
   productsCount: number;
   totalUSD: string;
   totalUAH: string;
 }
-
+export interface ProductPrice {
+  value: string; // например "71.26"
+  symbol: string; // например "USD"
+  isDefault: 0 | 1; // 1 если это дефолтная валюта
+}
+export interface ProductGuarantee {
+  start: string; // ISO string
+  end: string; // ISO string
+  product_id: number;
+}
+// response
 export interface ProductRes {
   id: number;
-  serialNumber: number;
-  isNew: number;
-  photo: string;
   title: string;
+  serialNumber: number;
   type: string;
   specification: string;
-  guarantee_start: Date;
-  guarantee_end: Date;
-  price_usd: string;
-  price_uah: string;
-  order_id: number;
-  date: Date;
-  orderTitle: string;
+  isNew: 0 | 1;
+  photo: string | null;
+  date: string; // ISO string
+  price: ProductPrice[]; // массив цен
+  guarantee?: ProductGuarantee;
 }
 
 export interface OrderRes {
   id: number;
   title: string;
-  date: Date;
-  description: string;
+  date: string; // ISO string
+  formattedDate: string; // готовый для UI
+  productsCount: number;
+  totalUSD: string;
+  totalUAH: string;
   products: ProductRes[];
 }
+// request
 
 export interface OrderPayload {
   title: string;
   description: string;
-  date: string; // ISO-строка
+  date: string; // ISO string
+  products?: ProductPayload | ProductPayload[];
 }
 
 export interface ProductPayload {
-  serialNumber: number;
-  isNew: number;
-  photo: "product.jpg";
-  title: "Keyboard Pro";
-  type: "Keyboards";
-  specification: "RGB Mechanical";
-  guarantee_start: "2025-12-06T11:11:00.000Z";
-  guarantee_end: "2025-12-06T11:11:00.000Z";
-  price_usd: number;
-  price_uah: number;
-  date: string; // ISO-строка
+  serialNumber: number | string; // backend примет и число, и строку с цифрами
+  isNew: 0 | 1 | boolean; // 1 / 0 или true / false
+  price: number | string; // backend конвертирует string в число
+  photo?: string | null;
+  title: string;
+  type: string;
+  specification: string;
+  guarantee_start?: string; // ISO string
+  guarantee_end?: string; // ISO string
+  inputCurrency: "UAH" | "USD";
+  date: string; // ISO string
 }
-
-// Orders
-export const fetchOrders = async (): Promise<OrderRes[]> => {
-  const res = await api.get<OrderRes[]>("/orders");
-  return res.data;
-};
-export const fetchOrderById = async (id: number): Promise<OrderRes> => {
-  const res = await api.get<OrderRes>(`/orders/${id}`);
-  return res.data;
-};
-export const createOrder = async (payload: OrderPayload): Promise<OrderRes> => {
-  const { data } = await api.post<OrderRes>("/orders", payload);
-  return data;
-};
-export const deleteOrder = async (id: number): Promise<number> => {
-  const res = await api.delete(`/orders/${id}`);
-  return res.status;
-};
-
-// Products
-export const fetchProducts = async (type?: string): Promise<ProductRes[]> => {
-  const res = await api.get<ProductRes[]>("/products", { params: { type } });
-  return res.data;
-};
-export const fetchProductsByOrder = async (
-  orderId: number,
-  type?: string
-): Promise<ProductRes[]> => {
-  const res = await api.get<ProductRes[]>(`/orders/${orderId}/products`, {
-    params: { type },
-  });
-  return res.data;
-};
-export const fetchProductById = async (id: number): Promise<ProductRes> => {
-  const res = await api.get<ProductRes>(`/products/${id}`);
-  return res.data;
-};
-export const createProduct = async (
-  orderId: number,
-  payload: any
-): Promise<ProductRes> => {
-  const res = await api.post(`/orders/${orderId}/products`, payload);
-  return res.data;
-};
-export const deleteProduct = async (id: number): Promise<number> => {
-  const res = await api.delete(`/products/${id}`);
-  return res.status;
-};
