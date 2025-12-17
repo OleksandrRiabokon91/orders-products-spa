@@ -22,7 +22,8 @@
     "http-errors": "^2.0.1",
     "joi": "^18.0.2",
     "mysql2": "^3.15.3",
-    "socket.io": "^4.8.1"
+    "socket.io": "^4.8.1",
+    "swagger-ui-express": "^5.0.1"
   },
   "devDependencies": {
     "@redocly/cli": "^2.12.6",

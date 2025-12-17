@@ -14,7 +14,18 @@ const app = express();
 
 //! ---------------- CORS ----------------
 //! После завершения удалённых тестов удалить "*". Оставить только в .env CORS_ORIGIN (конкретный URL фронтенда или http://localhost:3000)
+// Swagger UI
+import swaggerUi from "swagger-ui-express";
+import fs from "fs";
+import path from "path";
+import { fileURLToPath } from "url";
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const swaggerDocument = JSON.parse(
+  fs.readFileSync(path.join(__dirname, "docs/swagger.json"), "utf8")
+);
+//
 const CORS_ORIGIN = process.env.CORS_ORIGIN || "*";
 
 app.use(
@@ -32,6 +43,11 @@ app.use(
 );
 app.use("/orders", ordersRouter);
 app.use("/products", productsRouter);
+app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
+app.use(
+  "/docs/swagger.json",
+  express.static(path.join(__dirname, "docs/swagger.json"))
+);
 app.use(notFoundHandler);
 app.use(errorHandler);
 
