@@ -1,15 +1,3 @@
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
 html,
 body {
   max-width: 100vw;
@@ -17,11 +5,8 @@ body {
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  color: #2f3c4e;
+  background: #edf1f4;
 }
 
 * {
@@ -35,12 +20,6 @@ a {
   text-decoration: none;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
-}
-
 ul,
 ol {
   margin: 0;
@@ -51,4 +30,14 @@ ol {
 li {
   margin: 0;
   padding: 0;
+}
+
+.app-layout {
+  display: flex;
+  min-height: calc(100vh - 60px);
+}
+
+.main-content {
+  flex: 1;
+  padding: 24px;
 }

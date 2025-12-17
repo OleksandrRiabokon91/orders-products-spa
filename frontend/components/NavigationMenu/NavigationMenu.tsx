@@ -2,49 +2,104 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import styles from "./NavigationMenu.module.css";
+import { usePathname } from "next/navigation";
+import css from "./NavigationMenu.module.css";
+import Image from "next/image";
 
 export default function NavigationMenu() {
   const [open, setOpen] = useState(true);
+  const pathname = usePathname();
+
+  const isActive = (href: string) => pathname === href && pathname !== "/";
 
   return (
-    <aside
-      className={`${styles.sidebar} ${open ? styles.open : styles.closed}`}
-    >
-      {/* Кнопка сворачивания */}
+    <aside className={`${css.sidebar} ${open ? css.open : css.closed}`}>
       <button
-        className={styles.toggleButton}
-        onClick={() => setOpen(!open)}
-        aria-label="Toggle sidebar"
+        className={css.toggleButton}
+        onClick={() => setOpen((v) => !v)}
+        title={open ? "Скрыть сайдбар" : "Открыть сайдбар"}
+        aria-label={open ? "Hide sidebar" : "Show sidebar"}
       >
-        <span className={styles.toggleIcon} />
+        <svg width="16" height="16" aria-hidden className={css.icon}>
+          {open ? (
+            <use href="/sprite.svg#icon-circle-left" />
+          ) : (
+            <use href="/sprite.svg#icon-circle-right" />
+          )}
+        </svg>
       </button>
-
-      {/* Навигация */}
-      <nav className={styles.nav}>
-        <ul className={styles.list}>
-          <li className={styles.item}>
-            <Link href="/orders" className={styles.link}>
-              Приходы
-            </Link>
-          </li>
-          <li className={styles.item}>
-            <Link href="/products" className={styles.link}>
-              Продукты
-            </Link>
-          </li>
-          <li className={styles.item}>
-            <Link href="/users" className={styles.link}>
-              Пользователи
-            </Link>
-          </li>
-          <li className={styles.item}>
-            <Link href="/settings" className={styles.link}>
-              Настройки
-            </Link>
-          </li>
-        </ul>
-      </nav>
+      <div className={css.content}>
+        <div className={css.profile}>
+          <Link
+            href="/users/profile"
+            className={css.avatarLink}
+            aria-label="Перейти в профиль"
+            title="Перейти в профиль"
+          >
+            <Image
+              width={46}
+              height={46}
+              src="/avatar.jpg" /* заглушка */
+              alt="User avatar"
+              className={css.avatar}
+            />
+          </Link>
+          <Link
+            href="/users/profile/set"
+            className={css.profileSettings}
+            aria-label="Настройки профиля"
+            title="Настройки профиля"
+          >
+            <svg className={css.icon} width="12" height="12" aria-hidden>
+              <use href="/sprite.svg#icon-set" />
+            </svg>
+          </Link>
+        </div>
+        <nav className={css.nav}>
+          <ul className={css.list}>
+            <li>
+              <Link
+                href="/orders"
+                className={`${css.link} ${
+                  isActive("/orders") ? css.active : ""
+                }`}
+              >
+                Приходы
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/products"
+                className={`${css.link} ${
+                  isActive("/products") ? css.active : ""
+                }`}
+              >
+                Продукты
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/users"
+                className={`${css.link} ${
+                  isActive("/users") ? css.active : ""
+                }`}
+              >
+                Пользователи
+              </Link>
+            </li>
+            <li>
+              <Link
+                href="/settings"
+                className={`${css.link} ${
+                  isActive("/settings") ? css.active : ""
+                }`}
+              >
+                Настройки
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      </div>
     </aside>
   );
 }
