@@ -1,0 +1,11 @@
+.list {
+  flex: 0 0 100%;
+  transition: flex-basis 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.collapsed_list {
+  flex-basis: 25%;
+}

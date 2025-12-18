@@ -1,4 +1,3 @@
-// app/orders/page.tsx
 import { fetchOrdersServer } from "../../lib/server_api";
 import OrdersContainer from "./OrdersContainer";
 

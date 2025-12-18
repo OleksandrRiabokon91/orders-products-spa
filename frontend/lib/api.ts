@@ -10,8 +10,8 @@ export const api = axios.create({
 export interface OrdersRes {
   id: number;
   title: string;
-  date: string; // ISO string, раньше было Date
-  formattedDate: string; // новый формат для UI
+  date: string; // ISO string
+  formattedDate: string;
   productsCount: number;
   totalUSD: string;
   totalUAH: string;
@@ -44,7 +44,7 @@ export interface OrderRes {
   id: number;
   title: string;
   date: string; // ISO string
-  formattedDate: string; // готовый для UI
+  formattedDate: string;
   productsCount: number;
   totalUSD: string;
   totalUAH: string;

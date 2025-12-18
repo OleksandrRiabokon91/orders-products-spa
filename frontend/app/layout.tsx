@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
-
 import "./globals.css";
-// import TanStackProvider from "@/components/TanStackProvider/TanStackProvider";
-// import Header from "@/components/Header/Header";
-// import Footer from "@/components/Footer/Footer";
-// import AuthProvider from "@/components/AuthProvider/AuthProvider";
+import type { Metadata } from "next";
+import NavigationMenu from "@/components/NavigationMenu/NavigationMenu";
+import { ReactNode } from "react";
+import { openSans } from "../fonts";
+import TopMenu from "@/components/TopMenu/TopMenu";
+import { ReduxProvider } from "@/components/ReduxProvider/ReduxProvider";
 
 export const metadata: Metadata = {
   title: "INVENTORY",
@@ -15,15 +15,6 @@ export const metadata: Metadata = {
     description: "Orders & Products.",
   },
 };
-import "./globals.css";
-// import { ReduxProvider } from "@/redux/store";
-// import TanStackProvider from "@/components/queryClient";
-// import "bootstrap/dist/css/bootstrap.min.css";
-import NavigationMenu from "@/components/NavigationMenu/NavigationMenu";
-import { ReactNode } from "react";
-import { openSans } from "../fonts";
-import TopMenu from "@/components/TopMenu/TopMenu";
-import { ReduxProvider } from "@/components/ReduxProvider/ReduxProvider";
 
 export default function RootLayout({
   children,
@@ -31,7 +22,6 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={openSans.className}>
-        {" "}
         <ReduxProvider>
           <TopMenu />
           <div className="app-layout">

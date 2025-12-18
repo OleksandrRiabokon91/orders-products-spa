@@ -1,10 +1,116 @@
 .card_box {
-  padding: 20px;
-  display: flex;
-  flex-direction: row;
-  background-color: #ffffff;
+  height: 83px;
 
-  border: 1px solid #2f3c4e;
+  display: flex;
+  align-items: center;
+
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
   border-radius: 8px;
   box-shadow: 0 1px 10px rgba(0, 0, 0, 0.1);
+
+  transition: transform 200ms ease, box-shadow 200ms ease;
+}
+
+.card_box:hover {
+  transform: scale(1.01);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.15);
+}
+.title {
+  flex: 1;
+  cursor: pointer;
+
+  font-size: 14px;
+  white-space: normal;
+  word-break: break-word;
+  min-width: 200px;
+  padding-left: 12px;
+
+  text-decoration: underline;
+}
+
+.info_box {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.info_box_colaps {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: 12px;
+}
+.burger_btn {
+  padding: 4px;
+  cursor: pointer;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 36px;
+  height: 36px;
+  background-color: #ffffff;
+  border: 1px solid #cccccc;
+  border-radius: 50%;
+}
+.icon {
+  fill: #2f3c4e;
+}
+.product_box {
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  font-size: 12;
+}
+.product_box strong {
+  font-size: 20;
+  font-weight: 300;
+}
+
+.date_box {
+  font-size: 12;
+  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 60px;
+}
+
+.date_box time:last-child {
+  font-weight: 600;
+  font-size: 14;
+}
+.prise_box {
+  display: flex;
+  flex-direction: column;
+  min-width: 83px;
+}
+.prise_box span {
+  font-size: 12;
+}
+
+.active_icon_wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  background-color: #3b423d;
+  height: 100%;
+  width: 40px;
+  margin-left: auto;
+  border-radius: 0 8px 8px 0;
+}
+
+.active_icon {
+  fill: #ffffff;
+}
+
+.del_btn {
+  cursor: pointer;
+  border: none;
+  background-color: transparent;
+  padding-right: 12px;
 }

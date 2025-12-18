@@ -1,3 +1,4 @@
+import css from "./OrdersList.module.css";
 import { OrdersRes } from "@/lib/api";
 import OrderCard from "../OrderCard/OrderCard";
 
@@ -17,7 +18,7 @@ export default function OrdersList({
   const isCollapsed = activeOrderId !== null;
 
   return (
-    <ul>
+    <ul className={`${css.list} ${isCollapsed ? css.collapsed_list : ""}`}>
       {orders.map((order) => (
         <OrderCard
           key={order.id}

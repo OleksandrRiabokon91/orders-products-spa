@@ -1,9 +1,9 @@
-import { ProductRes } from "@/lib/api"; // твой тип продукта
+import { ProductRes } from "@/lib/api";
 import css from "./ProductCard.module.css";
-
+//! компонент пока сырой
 interface Props {
   product: ProductRes;
-  onDelete?: (id: number) => void; // optional, для удаления
+  onDelete?: (id: number) => void; //! optional, для удаления - пока не доделан
 }
 
 export default function ProductCard({ product, onDelete }: Props) {
