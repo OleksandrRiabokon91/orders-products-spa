@@ -1,6 +1,7 @@
 .sidebar {
-  position: relative;
-  width: 200px;
+  position: sticky;
+  top: 60px;
+  align-self: flex-start;
   min-height: calc(100vh - 60px);
   background-color: #f5f7f9;
   transition: width 0.3s ease;
@@ -17,9 +18,9 @@
 }
 
 .toggleButton {
-  position: absolute;
-  top: 40%;
-  right: -24px;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
 
   width: 18px;
   height: 18px;
@@ -29,7 +30,6 @@
   justify-content: center;
 
   background-color: transparent;
-  border-radius: 50%;
   border: none;
   cursor: pointer;
 

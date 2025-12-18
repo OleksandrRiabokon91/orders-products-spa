@@ -1,13 +1,9 @@
+// app/orders/page.tsx
 import { fetchOrdersServer } from "../../lib/server_api";
-import OrdersList from "./OrdersList";
+import OrdersContainer from "./OrdersContainer";
 
 export default async function OrdersPage() {
   const orders = await fetchOrdersServer();
 
-  return (
-    <section>
-      <h1>Orders</h1>
-      <OrdersList initialOrders={orders} />
-    </section>
-  );
+  return <OrdersContainer initialOrders={orders} />;
 }

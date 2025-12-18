@@ -31,7 +31,7 @@ const CORS_ORIGIN = process.env.CORS_ORIGIN || "*";
 app.use(
   cors({
     origin: CORS_ORIGIN,
-    methods: ["GET", "POST"],
+    methods: ["GET", "POST", "DELETE", "PUT", "PATCH"],
   })
 );
 

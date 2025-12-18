@@ -23,6 +23,7 @@ import NavigationMenu from "@/components/NavigationMenu/NavigationMenu";
 import { ReactNode } from "react";
 import { openSans } from "../fonts";
 import TopMenu from "@/components/TopMenu/TopMenu";
+import { ReduxProvider } from "@/components/ReduxProvider/ReduxProvider";
 
 export default function RootLayout({
   children,
@@ -31,15 +32,13 @@ export default function RootLayout({
     <html lang="en">
       <body className={openSans.className}>
         {" "}
-        {/* <ReduxProvider> */}
-        {/* <TanStackProvider> */}
-        <TopMenu />
-        <div className="app-layout">
-          <NavigationMenu />
-          <main className="main-content">{children}</main>
-        </div>
-        {/* </TanStackProvider> */}
-        {/* </ReduxProvider> */}
+        <ReduxProvider>
+          <TopMenu />
+          <div className="app-layout">
+            <NavigationMenu />
+            <main className="main-content">{children}</main>
+          </div>
+        </ReduxProvider>
       </body>
     </html>
   );
